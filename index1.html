@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dnevna misna čitanja</title>
+<meta name="description" content="Rimokatolički red čitanja za svetu misu — dnevna čitanja prema liturgijskom kalendaru."/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✝</text></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;background:#F5EDD8;font-family:'EB Garamond',Georgia,serif}
+::selection{background:#B8860B44}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%,100%{opacity:.7}50%{opacity:1}}
+.cross-pulse{animation:shimmer 3s ease-in-out infinite}
+.reading-enter{animation:fadeIn .35s ease forwards}
+button:hover{opacity:.85}
+a:hover{opacity:.85}
+details summary::-webkit-details-marker{display:none}
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(135deg,#2D0A1E 0%,#4A1228 60%,#2D0A1E 100%);
+  border-bottom:3px solid var(--sc,#B8860B);
+  padding:28px 20px 22px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 8px);
+  opacity:.06;pointer-events:none;
+}
+.header-cross{font-size:28px;color:var(--sc,#B8860B);margin-bottom:6px;font-family:serif}
+.header-title{
+  font-family:'Cinzel Decorative','Cinzel',Georgia,serif;
+  font-size:clamp(20px,5vw,30px);font-weight:700;
+  color:#F5EDD8;letter-spacing:.06em;line-height:1.2;
+}
+.header-sub{font-style:italic;font-size:15px;color:var(--sc-t,#B8860B);margin-top:6px;letter-spacing:.03em}
+.season-badge{
+  display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  padding:4px 14px;background:var(--sc-bg,rgba(184,134,11,.2));
+  border:1px solid var(--sc-border,rgba(184,134,11,.4));border-radius:20px;
+  font-size:13px;color:var(--sc,#B8860B);font-family:'Cinzel',Georgia,serif;letter-spacing:.08em;
+}
+.season-dot{width:8px;height:8px;border-radius:50%;background:var(--sc,#B8860B)}
+
+/* ── NAV ── */
+nav{
+  background:#2D0A1E;padding:14px 20px;
+  display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;
+  border-bottom:2px solid var(--sc-border,rgba(184,134,11,.2));
+}
+.nav-btn{
+  width:36px;height:36px;background:transparent;
+  color:var(--sc,#B8860B);border:1.5px solid var(--sc-border2,rgba(184,134,11,.4));
+  border-radius:50%;cursor:pointer;font-size:13px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.nav-date{text-align:center}
+.nav-date-str{
+  font-family:'Cinzel',Georgia,serif;
+  font-size:clamp(13px,3vw,16px);color:#F5EDD8;letter-spacing:.04em;text-transform:capitalize;
+}
+.nav-date-lit{font-style:italic;font-size:14px;color:var(--sc,#B8860B);margin-top:2px}
+.today-btn{
+  padding:6px 14px;background:var(--sc,#B8860B);color:#fff;
+  border:none;border-radius:20px;cursor:pointer;
+  font-family:'Cinzel',Georgia,serif;font-size:12px;letter-spacing:.08em;
+}
+
+/* ── MAIN ── */
+main{max-width:760px;margin:0 auto;padding:28px 16px 60px}
+.ornament{text-align:center;margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:10px}
+.ornament-line{display:inline-block;width:60px;height:2px;background:linear-gradient(to right,transparent,var(--sc,#B8860B),transparent)}
+.ornament-cross{color:var(--sc,#B8860B);font-size:20px;font-family:serif}
+
+.readings-title{
+  font-family:'Cinzel',Georgia,serif;
+  font-size:clamp(16px,4vw,22px);font-weight:600;
+  color:#2D0A1E;letter-spacing:.04em;margin-bottom:20px;text-align:center;line-height:1.3;
+}
+.readings-list{display:flex;flex-direction:column;gap:12px}
+
+/* ── READING CARD ── */
+.card{
+  background:#faf6ef;border:1px solid var(--sc-border,rgba(184,134,11,.27));
+  border-radius:8px;overflow:hidden;transition:box-shadow .2s;
+}
+.card.gospel{background:#fdf8ee;border-left:4px solid var(--sc,#B8860B)}
+.card-inner{padding:16px 18px}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card-label-wrap{flex:1}
+.label-badge{
+  display:inline-block;font-size:11px;font-family:'Cinzel',Georgia,serif;
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:2px 8px;border-radius:3px;margin-bottom:6px;
+}
+.label-badge.gospel{color:var(--sc,#B8860B);background:var(--sc-bg,rgba(184,134,11,.13))}
+.label-badge.other{color:#6b5c3e;background:#f0e8d8}
+.card-ref{font-size:18px;font-family:'EB Garamond',Georgia,serif;color:#2c1a0e;font-weight:600;line-height:1.3}
+.card-actions{display:flex;gap:6px;flex-shrink:0;margin-top:4px;flex-wrap:wrap}
+.read-btn{
+  padding:6px 12px;border-radius:20px;cursor:pointer;
+  font-size:12px;font-family:'Cinzel',Georgia,serif;letter-spacing:.05em;
+  transition:all .2s;white-space:nowrap;
+  border:1.5px solid var(--sc,#B8860B);
+}
+.read-btn.closed{background:transparent;color:var(--sc,#B8860B)}
+.read-btn.open{background:var(--sc,#B8860B);color:#fff}
+.hr-btn{
+  padding:6px 12px;background:transparent;color:#8B6914;
+  border:1.5px solid #c9a96e;border-radius:20px;
+  font-size:12px;font-family:'Cinzel',Georgia,serif;letter-spacing:.05em;
+  text-decoration:none;white-space:nowrap;
+}
+.card-text{
+  margin-top:14px;padding-top:14px;
+  border-top:1px dashed var(--sc-border,rgba(184,134,11,.27));
+  font-size:16px;line-height:1.85;
+  font-family:'EB Garamond',Georgia,serif;color:#2c1a0e;white-space:pre-wrap;
+}
+.card-text-meta{
+  font-size:11px;font-family:'Cinzel',Georgia,serif;color:#999;
+  letter-spacing:.1em;margin-bottom:10px;text-transform:uppercase;
+}
+.card-error{color:#c00;font-size:13px;margin-top:8px;font-style:italic}
+
+/* ── TIP ── */
+.tip{
+  margin-top:28px;padding:12px 16px;
+  background:var(--sc-bg,rgba(184,134,11,.07));
+  border:1px solid var(--sc-border,rgba(184,134,11,.2));
+  border-radius:8px;font-size:13px;color:#6b5c3e;font-style:italic;text-align:center;
+}
+
+/* ── EMPTY STATE ── */
+.empty{
+  background:#fff;border:1px solid var(--sc-border,rgba(184,134,11,.27));
+  border-radius:10px;padding:32px 24px;text-align:center;color:#6b5c3e;
+}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty-msg{font-family:'EB Garamond',Georgia,serif;font-size:16px;line-height:1.7;font-style:italic}
+.empty-links{margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.link-primary{
+  padding:8px 16px;background:var(--sc,#B8860B);color:#fff;border-radius:20px;
+  text-decoration:none;font-size:13px;font-family:'Cinzel',Georgia,serif;letter-spacing:.06em;
+}
+.link-secondary{
+  padding:8px 16px;background:transparent;color:var(--sc,#B8860B);
+  border:1.5px solid var(--sc,#B8860B);border-radius:20px;
+  text-decoration:none;font-size:13px;font-family:'Cinzel',Georgia,serif;letter-spacing:.06em;
+}
+
+/* ── META FOOTER ── */
+.meta-cards{
+  margin-top:36px;padding-top:20px;
+  border-top:1px solid var(--sc-border,rgba(184,134,11,.2));
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+}
+.meta-card{
+  background:#fff;border:1px solid var(--sc-border,rgba(184,134,11,.2));
+  border-radius:8px;padding:8px 16px;text-align:center;min-width:120px;
+}
+.meta-label{font-size:11px;font-family:'Cinzel',Georgia,serif;letter-spacing:.1em;color:#999;text-transform:uppercase;margin-bottom:3px}
+.meta-value{font-size:15px;font-family:'EB Garamond',Georgia,serif;color:var(--sc,#B8860B);font-weight:600}
+
+/* ── ABOUT ── */
+.about-summary{
+  font-family:'Cinzel',Georgia,serif;font-size:12px;letter-spacing:.1em;
+  color:#999;text-transform:uppercase;cursor:pointer;
+  padding:8px 0;list-style:none;text-align:center;margin-top:24px;
+}
+.about-body{
+  margin-top:10px;padding:14px 16px;background:#fff;
+  border:1px solid var(--sc-border,rgba(184,134,11,.13));border-radius:8px;
+  font-size:14px;color:#6b5c3e;line-height:1.7;
+}
+.about-body p+p{margin-top:6px}
+
+/* ── YEAR WARNING ── */
+.year-warn{
+  background:#fff8e7;border:1px solid #e8c97a;border-radius:8px;
+  padding:10px 14px;margin-bottom:18px;font-size:14px;color:#7a5c00;font-style:italic;
+}
+
+@media(max-width:480px){
+  .card-top{flex-direction:column}
+  .card-actions{margin-top:8px}
+}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+// ════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════
+function getEaster(year){
+  const a=year%19,b=Math.floor(year/100),c=year%100;
+  const d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3);
+  const h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4;
+  const l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);
+  const month=Math.floor((h+l-7*m+114)/31),day=((h+l-7*m+114)%31)+1;
+  return new Date(year,month-1,day);
+}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+function getAdventStart(year){const nov27=new Date(year,10,27);const dow=nov27.getDay();return dow===0?nov27:addDays(nov27,7-dow)}
+
+const DAYS_HR=['nedjelja','ponedjeljak','utorak','srijeda','četvrtak','petak','subota'];
+const MONTHS_HR=['siječnja','veljače','ožujka','travnja','svibnja','lipnja','srpnja','kolovoza','rujna','listopada','studenog','prosinca'];
+function formatDateHR(d){return `${DAYS_HR[d.getDay()]}, ${d.getDate()}. ${MONTHS_HR[d.getMonth()]} ${d.getFullYear()}.`}
+
+const SEASON_NAMES={advent:'Došašće',christmas:'Božićno vrijeme',lent:'Korizma',holyWeek:'Sveti tjedan',easter:'Uskrsno vrijeme',ordinary:'Kroz godinu'};
+const SEASON_COLORS={advent:'#6B3FA0',christmas:'#B8860B',lent:'#6B3FA0',holyWeek:'#B22222',easter:'#B8860B',ordinary:'#2D6A2D'};
+
+// ════════════════════════════════════════════
+// LECTIONARY — YEAR A (full Sunday set)
+// ════════════════════════════════════════════
+const LECT_A={
+  advent:[
+    {title:"1. nedjelja došašća",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 2:1-5",bcId:"ISA.2.1-5"},
+      {label:"Psalam",ref:"Psalm 122:1-9",bcId:"PSA.122.1-9"},
+      {label:"Drugo čitanje",ref:"Romans 13:11-14",bcId:"ROM.13.11-14"},
+      {label:"Evanđelje",ref:"Matthew 24:37-44",bcId:"MAT.24.37-44"},
+    ]},
+    {title:"2. nedjelja došašća",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 11:1-10",bcId:"ISA.11.1-10"},
+      {label:"Psalam",ref:"Psalm 72:1-14",bcId:"PSA.72.1-14"},
+      {label:"Drugo čitanje",ref:"Romans 15:4-9",bcId:"ROM.15.4-9"},
+      {label:"Evanđelje",ref:"Matthew 3:1-12",bcId:"MAT.3.1-12"},
+    ]},
+    {title:"3. nedjelja došašća",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 35:1-10",bcId:"ISA.35.1-10"},
+      {label:"Psalam",ref:"Psalm 146:5-10",bcId:"PSA.146.5-10"},
+      {label:"Drugo čitanje",ref:"James 5:7-10",bcId:"JAS.5.7-10"},
+      {label:"Evanđelje",ref:"Matthew 11:2-11",bcId:"MAT.11.2-11"},
+    ]},
+    {title:"4. nedjelja došašća",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 7:10-14",bcId:"ISA.7.10-14"},
+      {label:"Psalam",ref:"Psalm 24:1-6",bcId:"PSA.24.1-6"},
+      {label:"Drugo čitanje",ref:"Romans 1:1-7",bcId:"ROM.1.1-7"},
+      {label:"Evanđelje",ref:"Matthew 1:18-25",bcId:"MAT.1.18-25"},
+    ]},
+  ],
+  christmas:{
+    nativity:{title:"Božić — noćna misa",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 9:1-6",bcId:"ISA.9.1-6"},
+      {label:"Psalam",ref:"Psalm 96:1-13",bcId:"PSA.96.1-13"},
+      {label:"Drugo čitanje",ref:"Titus 2:11-14",bcId:"TIT.2.11-14"},
+      {label:"Evanđelje",ref:"Luke 2:1-14",bcId:"LUK.2.1-14"},
+    ]},
+    holyFamily:{title:"Sveta Obitelj",readings:[
+      {label:"Prvo čitanje",ref:"Sirach 3:2-14",bcId:"SIR.3.2-14"},
+      {label:"Psalam",ref:"Psalm 128:1-5",bcId:"PSA.128.1-5"},
+      {label:"Drugo čitanje",ref:"Colossians 3:12-21",bcId:"COL.3.12-21"},
+      {label:"Evanđelje",ref:"Matthew 2:13-23",bcId:"MAT.2.13-23"},
+    ]},
+    maryMotherOfGod:{title:"Marija, Majka Božja (1. siječnja)",readings:[
+      {label:"Prvo čitanje",ref:"Numbers 6:22-27",bcId:"NUM.6.22-27"},
+      {label:"Psalam",ref:"Psalm 67:2-8",bcId:"PSA.67.2-8"},
+      {label:"Drugo čitanje",ref:"Galatians 4:4-7",bcId:"GAL.4.4-7"},
+      {label:"Evanđelje",ref:"Luke 2:16-21",bcId:"LUK.2.16-21"},
+    ]},
+    epiphany:{title:"Bogojavljenje",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 60:1-6",bcId:"ISA.60.1-6"},
+      {label:"Psalam",ref:"Psalm 72:1-13",bcId:"PSA.72.1-13"},
+      {label:"Drugo čitanje",ref:"Ephesians 3:2-6",bcId:"EPH.3.2-6"},
+      {label:"Evanđelje",ref:"Matthew 2:1-12",bcId:"MAT.2.1-12"},
+    ]},
+    baptism:{title:"Krštenje Gospodinovo",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 42:1-7",bcId:"ISA.42.1-7"},
+      {label:"Psalam",ref:"Psalm 29:1-10",bcId:"PSA.29.1-10"},
+      {label:"Drugo čitanje",ref:"Acts 10:34-38",bcId:"ACT.10.34-38"},
+      {label:"Evanđelje",ref:"Matthew 3:13-17",bcId:"MAT.3.13-17"},
+    ]},
+  },
+  lent:[
+    {title:"Pepelnica",readings:[
+      {label:"Prvo čitanje",ref:"Joel 2:12-18",bcId:"JOL.2.12-18"},
+      {label:"Psalam",ref:"Psalm 51:3-17",bcId:"PSA.51.3-17"},
+      {label:"Drugo čitanje",ref:"2 Corinthians 5:20-6:2",bcId:"2CO.5.20-6.2"},
+      {label:"Evanđelje",ref:"Matthew 6:1-18",bcId:"MAT.6.1-18"},
+    ]},
+    {title:"1. nedjelja korizme",readings:[
+      {label:"Prvo čitanje",ref:"Genesis 2:7-9",bcId:"GEN.2.7-9"},
+      {label:"Psalam",ref:"Psalm 51:3-17",bcId:"PSA.51.3-17"},
+      {label:"Drugo čitanje",ref:"Romans 5:12-19",bcId:"ROM.5.12-19"},
+      {label:"Evanđelje",ref:"Matthew 4:1-11",bcId:"MAT.4.1-11"},
+    ]},
+    {title:"2. nedjelja korizme",readings:[
+      {label:"Prvo čitanje",ref:"Genesis 12:1-4",bcId:"GEN.12.1-4"},
+      {label:"Psalam",ref:"Psalm 33:4-22",bcId:"PSA.33.4-22"},
+      {label:"Drugo čitanje",ref:"2 Timothy 1:8-10",bcId:"2TI.1.8-10"},
+      {label:"Evanđelje",ref:"Matthew 17:1-9",bcId:"MAT.17.1-9"},
+    ]},
+    {title:"3. nedjelja korizme",readings:[
+      {label:"Prvo čitanje",ref:"Exodus 17:3-7",bcId:"EXO.17.3-7"},
+      {label:"Psalam",ref:"Psalm 95:1-9",bcId:"PSA.95.1-9"},
+      {label:"Drugo čitanje",ref:"Romans 5:1-8",bcId:"ROM.5.1-8"},
+      {label:"Evanđelje",ref:"John 4:5-42",bcId:"JHN.4.5-42"},
+    ]},
+    {title:"4. nedjelja korizme",readings:[
+      {label:"Prvo čitanje",ref:"1 Samuel 16:1-13",bcId:"1SA.16.1-13"},
+      {label:"Psalam",ref:"Psalm 23:1-6",bcId:"PSA.23.1-6"},
+      {label:"Drugo čitanje",ref:"Ephesians 5:8-14",bcId:"EPH.5.8-14"},
+      {label:"Evanđelje",ref:"John 9:1-41",bcId:"JHN.9.1-41"},
+    ]},
+    {title:"5. nedjelja korizme",readings:[
+      {label:"Prvo čitanje",ref:"Ezekiel 37:12-14",bcId:"EZK.37.12-14"},
+      {label:"Psalam",ref:"Psalm 130:1-8",bcId:"PSA.130.1-8"},
+      {label:"Drugo čitanje",ref:"Romans 8:8-11",bcId:"ROM.8.8-11"},
+      {label:"Evanđelje",ref:"John 11:1-45",bcId:"JHN.11.1-45"},
+    ]},
+    {title:"Cvjetnica — Nedjelja muke Gospodnje",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 50:4-7",bcId:"ISA.50.4-7"},
+      {label:"Psalam",ref:"Psalm 22:8-24",bcId:"PSA.22.8-24"},
+      {label:"Drugo čitanje",ref:"Philippians 2:6-11",bcId:"PHP.2.6-11"},
+      {label:"Evanđelje (Muka)",ref:"Matthew 26:14-27:66",bcId:"MAT.26.14-27.66"},
+    ]},
+  ],
+  holyWeek:{
+    holyThursday:{title:"Veliki četvrtak — Večerna misa Večere Gospodnje",readings:[
+      {label:"Prvo čitanje",ref:"Exodus 12:1-14",bcId:"EXO.12.1-14"},
+      {label:"Psalam",ref:"Psalm 116:12-18",bcId:"PSA.116.12-18"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 11:23-26",bcId:"1CO.11.23-26"},
+      {label:"Evanđelje",ref:"John 13:1-15",bcId:"JHN.13.1-15"},
+    ]},
+    goodFriday:{title:"Veliki petak — Muka Gospodnja",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 52:13-53:12",bcId:"ISA.52.13-53.12"},
+      {label:"Psalam",ref:"Psalm 31:2-25",bcId:"PSA.31.2-25"},
+      {label:"Drugo čitanje",ref:"Hebrews 4:14-5:9",bcId:"HEB.4.14-5.9"},
+      {label:"Evanđelje (Muka)",ref:"John 18:1-19:42",bcId:"JHN.18.1-19.42"},
+    ]},
+    holySaturday:{title:"Velika subota — Uskrsno bdijenje",readings:[
+      {label:"1. čitanje",ref:"Genesis 1:1-2:2",bcId:"GEN.1.1-2.2"},
+      {label:"2. čitanje",ref:"Genesis 22:1-18",bcId:"GEN.22.1-18"},
+      {label:"3. čitanje",ref:"Exodus 14:15-15:1",bcId:"EXO.14.15-15.1"},
+      {label:"4. čitanje",ref:"Isaiah 54:5-14",bcId:"ISA.54.5-14"},
+      {label:"5. čitanje",ref:"Isaiah 55:1-11",bcId:"ISA.55.1-11"},
+      {label:"Poslanica",ref:"Romans 6:3-11",bcId:"ROM.6.3-11"},
+      {label:"Evanđelje",ref:"Matthew 28:1-10",bcId:"MAT.28.1-10"},
+    ]},
+  },
+  easter:[
+    {title:"Uskrsna nedjelja",readings:[
+      {label:"Prvo čitanje",ref:"Acts 10:34-43",bcId:"ACT.10.34-43"},
+      {label:"Psalam",ref:"Psalm 118:1-23",bcId:"PSA.118.1-23"},
+      {label:"Drugo čitanje",ref:"Colossians 3:1-4",bcId:"COL.3.1-4"},
+      {label:"Evanđelje",ref:"John 20:1-9",bcId:"JHN.20.1-9"},
+    ]},
+    {title:"2. uskrsna nedjelja — Nedjelja Božanskog Milosrđa",readings:[
+      {label:"Prvo čitanje",ref:"Acts 2:42-47",bcId:"ACT.2.42-47"},
+      {label:"Psalam",ref:"Psalm 118:2-24",bcId:"PSA.118.2-24"},
+      {label:"Drugo čitanje",ref:"1 Peter 1:3-9",bcId:"1PE.1.3-9"},
+      {label:"Evanđelje",ref:"John 20:19-31",bcId:"JHN.20.19-31"},
+    ]},
+    {title:"3. uskrsna nedjelja",readings:[
+      {label:"Prvo čitanje",ref:"Acts 2:14-33",bcId:"ACT.2.14-33"},
+      {label:"Psalam",ref:"Psalm 16:1-11",bcId:"PSA.16.1-11"},
+      {label:"Drugo čitanje",ref:"1 Peter 1:17-21",bcId:"1PE.1.17-21"},
+      {label:"Evanđelje",ref:"Luke 24:13-35",bcId:"LUK.24.13-35"},
+    ]},
+    {title:"4. uskrsna nedjelja — Nedjelja Dobrog Pastira",readings:[
+      {label:"Prvo čitanje",ref:"Acts 2:14-41",bcId:"ACT.2.14-41"},
+      {label:"Psalam",ref:"Psalm 23:1-6",bcId:"PSA.23.1-6"},
+      {label:"Drugo čitanje",ref:"1 Peter 2:20-25",bcId:"1PE.2.20-25"},
+      {label:"Evanđelje",ref:"John 10:1-10",bcId:"JHN.10.1-10"},
+    ]},
+    {title:"5. uskrsna nedjelja",readings:[
+      {label:"Prvo čitanje",ref:"Acts 6:1-7",bcId:"ACT.6.1-7"},
+      {label:"Psalam",ref:"Psalm 33:1-19",bcId:"PSA.33.1-19"},
+      {label:"Drugo čitanje",ref:"1 Peter 2:4-9",bcId:"1PE.2.4-9"},
+      {label:"Evanđelje",ref:"John 14:1-12",bcId:"JHN.14.1-12"},
+    ]},
+    {title:"6. uskrsna nedjelja",readings:[
+      {label:"Prvo čitanje",ref:"Acts 8:5-17",bcId:"ACT.8.5-17"},
+      {label:"Psalam",ref:"Psalm 66:1-20",bcId:"PSA.66.1-20"},
+      {label:"Drugo čitanje",ref:"1 Peter 3:15-18",bcId:"1PE.3.15-18"},
+      {label:"Evanđelje",ref:"John 14:15-21",bcId:"JHN.14.15-21"},
+    ]},
+    {title:"Uzašašće Gospodinovo",readings:[
+      {label:"Prvo čitanje",ref:"Acts 1:1-11",bcId:"ACT.1.1-11"},
+      {label:"Psalam",ref:"Psalm 47:2-9",bcId:"PSA.47.2-9"},
+      {label:"Drugo čitanje",ref:"Ephesians 1:17-23",bcId:"EPH.1.17-23"},
+      {label:"Evanđelje",ref:"Matthew 28:16-20",bcId:"MAT.28.16-20"},
+    ]},
+    {title:"7. uskrsna nedjelja",readings:[
+      {label:"Prvo čitanje",ref:"Acts 1:12-14",bcId:"ACT.1.12-14"},
+      {label:"Psalam",ref:"Psalm 27:1-8",bcId:"PSA.27.1-8"},
+      {label:"Drugo čitanje",ref:"1 Peter 4:13-16",bcId:"1PE.4.13-16"},
+      {label:"Evanđelje",ref:"John 17:1-11",bcId:"JHN.17.1-11"},
+    ]},
+    {title:"Duhovi — Nedjelja Duha Svetoga",readings:[
+      {label:"Prvo čitanje",ref:"Acts 2:1-11",bcId:"ACT.2.1-11"},
+      {label:"Psalam",ref:"Psalm 104:1-34",bcId:"PSA.104.1-34"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 12:3-13",bcId:"1CO.12.3-13"},
+      {label:"Evanđelje",ref:"John 20:19-23",bcId:"JHN.20.19-23"},
+    ]},
+  ],
+  ordinary:[
+    null, // 1 — Krštenje Gospodinovo
+    {title:"2. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 49:3-6",bcId:"ISA.49.3-6"},
+      {label:"Psalam",ref:"Psalm 40:2-10",bcId:"PSA.40.2-10"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 1:1-3",bcId:"1CO.1.1-3"},
+      {label:"Evanđelje",ref:"John 1:29-34",bcId:"JHN.1.29-34"},
+    ]},
+    {title:"3. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 8:23-9:3",bcId:"ISA.8.23-9.3"},
+      {label:"Psalam",ref:"Psalm 27:1-14",bcId:"PSA.27.1-14"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 1:10-17",bcId:"1CO.1.10-17"},
+      {label:"Evanđelje",ref:"Matthew 4:12-23",bcId:"MAT.4.12-23"},
+    ]},
+    {title:"4. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Zephaniah 2:3",bcId:"ZEP.2.3"},
+      {label:"Psalam",ref:"Psalm 146:6-10",bcId:"PSA.146.6-10"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 1:26-31",bcId:"1CO.1.26-31"},
+      {label:"Evanđelje",ref:"Matthew 5:1-12",bcId:"MAT.5.1-12"},
+    ]},
+    {title:"5. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 58:7-10",bcId:"ISA.58.7-10"},
+      {label:"Psalam",ref:"Psalm 112:4-9",bcId:"PSA.112.4-9"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 2:1-5",bcId:"1CO.2.1-5"},
+      {label:"Evanđelje",ref:"Matthew 5:13-16",bcId:"MAT.5.13-16"},
+    ]},
+    {title:"6. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Sirach 15:15-20",bcId:"SIR.15.15-20"},
+      {label:"Psalam",ref:"Psalm 119:1-34",bcId:"PSA.119.1-34"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 2:6-10",bcId:"1CO.2.6-10"},
+      {label:"Evanđelje",ref:"Matthew 5:17-37",bcId:"MAT.5.17-37"},
+    ]},
+    {title:"7. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Leviticus 19:1-18",bcId:"LEV.19.1-18"},
+      {label:"Psalam",ref:"Psalm 103:1-13",bcId:"PSA.103.1-13"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 3:16-23",bcId:"1CO.3.16-23"},
+      {label:"Evanđelje",ref:"Matthew 5:38-48",bcId:"MAT.5.38-48"},
+    ]},
+    {title:"8. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 49:14-15",bcId:"ISA.49.14-15"},
+      {label:"Psalam",ref:"Psalm 62:2-9",bcId:"PSA.62.2-9"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 4:1-5",bcId:"1CO.4.1-5"},
+      {label:"Evanđelje",ref:"Matthew 6:24-34",bcId:"MAT.6.24-34"},
+    ]},
+    {title:"9. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Deuteronomy 11:18-28",bcId:"DEU.11.18-28"},
+      {label:"Psalam",ref:"Psalm 31:2-25",bcId:"PSA.31.2-25"},
+      {label:"Drugo čitanje",ref:"Romans 3:21-28",bcId:"ROM.3.21-28"},
+      {label:"Evanđelje",ref:"Matthew 7:21-27",bcId:"MAT.7.21-27"},
+    ]},
+    {title:"10. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Hosea 6:3-6",bcId:"HOS.6.3-6"},
+      {label:"Psalam",ref:"Psalm 50:1-15",bcId:"PSA.50.1-15"},
+      {label:"Drugo čitanje",ref:"Romans 4:18-25",bcId:"ROM.4.18-25"},
+      {label:"Evanđelje",ref:"Matthew 9:9-13",bcId:"MAT.9.9-13"},
+    ]},
+    {title:"11. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Exodus 19:2-6",bcId:"EXO.19.2-6"},
+      {label:"Psalam",ref:"Psalm 100:1-5",bcId:"PSA.100.1-5"},
+      {label:"Drugo čitanje",ref:"Romans 5:6-11",bcId:"ROM.5.6-11"},
+      {label:"Evanđelje",ref:"Matthew 9:36-10:8",bcId:"MAT.9.36-10.8"},
+    ]},
+    {title:"12. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Jeremiah 20:10-13",bcId:"JER.20.10-13"},
+      {label:"Psalam",ref:"Psalm 69:8-35",bcId:"PSA.69.8-35"},
+      {label:"Drugo čitanje",ref:"Romans 5:12-15",bcId:"ROM.5.12-15"},
+      {label:"Evanđelje",ref:"Matthew 10:26-33",bcId:"MAT.10.26-33"},
+    ]},
+    {title:"13. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"2 Kings 4:8-16",bcId:"2KI.4.8-16"},
+      {label:"Psalam",ref:"Psalm 89:2-19",bcId:"PSA.89.2-19"},
+      {label:"Drugo čitanje",ref:"Romans 6:3-11",bcId:"ROM.6.3-11"},
+      {label:"Evanđelje",ref:"Matthew 10:37-42",bcId:"MAT.10.37-42"},
+    ]},
+    {title:"14. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Zechariah 9:9-10",bcId:"ZEC.9.9-10"},
+      {label:"Psalam",ref:"Psalm 145:1-14",bcId:"PSA.145.1-14"},
+      {label:"Drugo čitanje",ref:"Romans 8:9-13",bcId:"ROM.8.9-13"},
+      {label:"Evanđelje",ref:"Matthew 11:25-30",bcId:"MAT.11.25-30"},
+    ]},
+    {title:"15. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 55:10-11",bcId:"ISA.55.10-11"},
+      {label:"Psalam",ref:"Psalm 65:10-14",bcId:"PSA.65.10-14"},
+      {label:"Drugo čitanje",ref:"Romans 8:18-23",bcId:"ROM.8.18-23"},
+      {label:"Evanđelje",ref:"Matthew 13:1-23",bcId:"MAT.13.1-23"},
+    ]},
+    {title:"16. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Wisdom 12:13-19",bcId:"WIS.12.13-19"},
+      {label:"Psalam",ref:"Psalm 86:5-16",bcId:"PSA.86.5-16"},
+      {label:"Drugo čitanje",ref:"Romans 8:26-27",bcId:"ROM.8.26-27"},
+      {label:"Evanđelje",ref:"Matthew 13:24-43",bcId:"MAT.13.24-43"},
+    ]},
+    {title:"17. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"1 Kings 3:5-12",bcId:"1KI.3.5-12"},
+      {label:"Psalam",ref:"Psalm 119:57-130",bcId:"PSA.119.57-130"},
+      {label:"Drugo čitanje",ref:"Romans 8:28-30",bcId:"ROM.8.28-30"},
+      {label:"Evanđelje",ref:"Matthew 13:44-52",bcId:"MAT.13.44-52"},
+    ]},
+    {title:"18. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 55:1-3",bcId:"ISA.55.1-3"},
+      {label:"Psalam",ref:"Psalm 145:8-18",bcId:"PSA.145.8-18"},
+      {label:"Drugo čitanje",ref:"Romans 8:35-39",bcId:"ROM.8.35-39"},
+      {label:"Evanđelje",ref:"Matthew 14:13-21",bcId:"MAT.14.13-21"},
+    ]},
+    {title:"19. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"1 Kings 19:9-13",bcId:"1KI.19.9-13"},
+      {label:"Psalam",ref:"Psalm 85:9-14",bcId:"PSA.85.9-14"},
+      {label:"Drugo čitanje",ref:"Romans 9:1-5",bcId:"ROM.9.1-5"},
+      {label:"Evanđelje",ref:"Matthew 14:22-33",bcId:"MAT.14.22-33"},
+    ]},
+    {title:"20. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 56:1-7",bcId:"ISA.56.1-7"},
+      {label:"Psalam",ref:"Psalm 67:2-8",bcId:"PSA.67.2-8"},
+      {label:"Drugo čitanje",ref:"Romans 11:13-32",bcId:"ROM.11.13-32"},
+      {label:"Evanđelje",ref:"Matthew 15:21-28",bcId:"MAT.15.21-28"},
+    ]},
+    {title:"21. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 22:15-23",bcId:"ISA.22.15-23"},
+      {label:"Psalam",ref:"Psalm 138:1-8",bcId:"PSA.138.1-8"},
+      {label:"Drugo čitanje",ref:"Romans 11:33-36",bcId:"ROM.11.33-36"},
+      {label:"Evanđelje",ref:"Matthew 16:13-20",bcId:"MAT.16.13-20"},
+    ]},
+    {title:"22. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Jeremiah 20:7-9",bcId:"JER.20.7-9"},
+      {label:"Psalam",ref:"Psalm 63:2-9",bcId:"PSA.63.2-9"},
+      {label:"Drugo čitanje",ref:"Romans 12:1-2",bcId:"ROM.12.1-2"},
+      {label:"Evanđelje",ref:"Matthew 16:21-27",bcId:"MAT.16.21-27"},
+    ]},
+    {title:"23. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Ezekiel 33:7-9",bcId:"EZK.33.7-9"},
+      {label:"Psalam",ref:"Psalm 95:1-9",bcId:"PSA.95.1-9"},
+      {label:"Drugo čitanje",ref:"Romans 13:8-10",bcId:"ROM.13.8-10"},
+      {label:"Evanđelje",ref:"Matthew 18:15-20",bcId:"MAT.18.15-20"},
+    ]},
+    {title:"24. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Sirach 27:30-28:7",bcId:"SIR.27.30-28.7"},
+      {label:"Psalam",ref:"Psalm 103:1-12",bcId:"PSA.103.1-12"},
+      {label:"Drugo čitanje",ref:"Romans 14:7-9",bcId:"ROM.14.7-9"},
+      {label:"Evanđelje",ref:"Matthew 18:21-35",bcId:"MAT.18.21-35"},
+    ]},
+    {title:"25. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 55:6-9",bcId:"ISA.55.6-9"},
+      {label:"Psalam",ref:"Psalm 145:2-18",bcId:"PSA.145.2-18"},
+      {label:"Drugo čitanje",ref:"Philippians 1:20-27",bcId:"PHP.1.20-27"},
+      {label:"Evanđelje",ref:"Matthew 20:1-16",bcId:"MAT.20.1-16"},
+    ]},
+    {title:"26. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Ezekiel 18:25-28",bcId:"EZK.18.25-28"},
+      {label:"Psalam",ref:"Psalm 25:4-9",bcId:"PSA.25.4-9"},
+      {label:"Drugo čitanje",ref:"Philippians 2:1-11",bcId:"PHP.2.1-11"},
+      {label:"Evanđelje",ref:"Matthew 21:28-32",bcId:"MAT.21.28-32"},
+    ]},
+    {title:"27. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 5:1-7",bcId:"ISA.5.1-7"},
+      {label:"Psalam",ref:"Psalm 80:9-20",bcId:"PSA.80.9-20"},
+      {label:"Drugo čitanje",ref:"Philippians 4:6-9",bcId:"PHP.4.6-9"},
+      {label:"Evanđelje",ref:"Matthew 21:33-43",bcId:"MAT.21.33-43"},
+    ]},
+    {title:"28. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 25:6-10",bcId:"ISA.25.6-10"},
+      {label:"Psalam",ref:"Psalm 23:1-6",bcId:"PSA.23.1-6"},
+      {label:"Drugo čitanje",ref:"Philippians 4:12-20",bcId:"PHP.4.12-20"},
+      {label:"Evanđelje",ref:"Matthew 22:1-14",bcId:"MAT.22.1-14"},
+    ]},
+    {title:"29. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Isaiah 45:1-6",bcId:"ISA.45.1-6"},
+      {label:"Psalam",ref:"Psalm 96:1-10",bcId:"PSA.96.1-10"},
+      {label:"Drugo čitanje",ref:"1 Thessalonians 1:1-5",bcId:"1TH.1.1-5"},
+      {label:"Evanđelje",ref:"Matthew 22:15-21",bcId:"MAT.22.15-21"},
+    ]},
+    {title:"30. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Exodus 22:20-26",bcId:"EXO.22.20-26"},
+      {label:"Psalam",ref:"Psalm 18:2-51",bcId:"PSA.18.2-51"},
+      {label:"Drugo čitanje",ref:"1 Thessalonians 1:5-10",bcId:"1TH.1.5-10"},
+      {label:"Evanđelje",ref:"Matthew 22:34-40",bcId:"MAT.22.34-40"},
+    ]},
+    {title:"31. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Malachi 1:14-2:10",bcId:"MAL.1.14-2.10"},
+      {label:"Psalam",ref:"Psalm 131:1-3",bcId:"PSA.131.1-3"},
+      {label:"Drugo čitanje",ref:"1 Thessalonians 2:7-13",bcId:"1TH.2.7-13"},
+      {label:"Evanđelje",ref:"Matthew 23:1-12",bcId:"MAT.23.1-12"},
+    ]},
+    {title:"32. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Wisdom 6:12-16",bcId:"WIS.6.12-16"},
+      {label:"Psalam",ref:"Psalm 63:2-8",bcId:"PSA.63.2-8"},
+      {label:"Drugo čitanje",ref:"1 Thessalonians 4:13-18",bcId:"1TH.4.13-18"},
+      {label:"Evanđelje",ref:"Matthew 25:1-13",bcId:"MAT.25.1-13"},
+    ]},
+    {title:"33. nedjelja kroz godinu",readings:[
+      {label:"Prvo čitanje",ref:"Proverbs 31:10-31",bcId:"PRO.31.10-31"},
+      {label:"Psalam",ref:"Psalm 128:1-5",bcId:"PSA.128.1-5"},
+      {label:"Drugo čitanje",ref:"1 Thessalonians 5:1-6",bcId:"1TH.5.1-6"},
+      {label:"Evanđelje",ref:"Matthew 25:14-30",bcId:"MAT.25.14-30"},
+    ]},
+    {title:"34. nedjelja — Krist Kralj svega stvorenja",readings:[
+      {label:"Prvo čitanje",ref:"Ezekiel 34:11-17",bcId:"EZK.34.11-17"},
+      {label:"Psalam",ref:"Psalm 23:1-6",bcId:"PSA.23.1-6"},
+      {label:"Drugo čitanje",ref:"1 Corinthians 15:20-28",bcId:"1CO.15.20-28"},
+      {label:"Evanđelje",ref:"Matthew 25:31-46",bcId:"MAT.25.31-46"},
+    ]},
+  ],
+};
+
+// ════════════════════════════════════════════
+// LITURGICAL CALENDAR RESOLVER
+// ════════════════════════════════════════════
+function getLiturgicalInfo(date){
+  const year=date.getFullYear();
+  const adventThisYear=getAdventStart(year);
+  const lYear=date>=adventThisYear?year:year-1;
+  const cycleNum=((lYear-2022)%3+3)%3;
+  const yearCycle=['A','B','C'][cycleNum];
+  const weekdayCycle=(year%2!==0)?'I':'II';
+  const ms=7*24*3600*1000;
+
+  const advent1=getAdventStart(lYear);
+  const christmas=new Date(lYear,11,25);
+  const easter=getEaster(lYear+1);
+  const epiphany=new Date(lYear+1,0,6);
+  const epDow=epiphany.getDay();
+  const baptism=addDays(epiphany,epDow===0?7:7-epDow);
+  const ashWed=addDays(easter,-46);
+  const palmSunday=addDays(easter,-7);
+  const holyThursday=addDays(easter,-3);
+  const goodFriday=addDays(easter,-2);
+  const holySaturday=addDays(easter,-1);
+  const ascension=addDays(easter,42);
+  const pentecost=addDays(easter,49);
+  const nextAdvent=getAdventStart(lYear+1);
+  const isSun=date.getDay()===0;
+
+  // ── Fixed feasts ──
+  if(sameDay(date,christmas)) return{title:"Božić",season:'christmas',day:'nativity',yearCycle,weekdayCycle,color:SEASON_COLORS.christmas,isSunday:true};
+  if(date.getMonth()===0&&date.getDate()===1) return{title:"Marija, Majka Božja",season:'christmas',day:'maryMotherOfGod',yearCycle,weekdayCycle,color:SEASON_COLORS.christmas,isSunday:false};
+  if(sameDay(date,epiphany)) return{title:"Bogojavljenje",season:'christmas',day:'epiphany',yearCycle,weekdayCycle,color:SEASON_COLORS.christmas,isSunday:true};
+  if(sameDay(date,baptism)) return{title:"Krštenje Gospodinovo",season:'christmas',day:'baptism',yearCycle,weekdayCycle,color:SEASON_COLORS.christmas,isSunday:true};
+  if(sameDay(date,ashWed)) return{title:"Pepelnica",season:'lent',day:'ashWednesday',yearCycle,weekdayCycle,color:SEASON_COLORS.lent,isSunday:false};
+  if(sameDay(date,palmSunday)) return{title:"Cvjetnica",season:'lent',day:'palmSunday',week:6,yearCycle,weekdayCycle,color:'#B22222',isSunday:true};
+  if(sameDay(date,holyThursday)) return{title:"Veliki četvrtak",season:'holyWeek',day:'holyThursday',yearCycle,weekdayCycle,color:SEASON_COLORS.holyWeek,isSunday:false};
+  if(sameDay(date,goodFriday)) return{title:"Veliki petak",season:'holyWeek',day:'goodFriday',yearCycle,weekdayCycle,color:'#B22222',isSunday:false};
+  if(sameDay(date,holySaturday)) return{title:"Velika subota",season:'holyWeek',day:'holySaturday',yearCycle,weekdayCycle,color:SEASON_COLORS.holyWeek,isSunday:false};
+  if(sameDay(date,easter)) return{title:"Uskrsna nedjelja",season:'easter',week:1,yearCycle,weekdayCycle,color:SEASON_COLORS.easter,isSunday:true};
+  if(sameDay(date,ascension)) return{title:"Uzašašće Gospodinovo",season:'easter',week:7,day:'ascension',yearCycle,weekdayCycle,color:SEASON_COLORS.easter,isSunday:false};
+  if(sameDay(date,pentecost)) return{title:"Duhovi",season:'easter',week:9,day:'pentecost',yearCycle,weekdayCycle,color:'#B22222',isSunday:true};
+
+  // Holy Family — first Sunday after Christmas
+  for(let i=26;i<=31;i++){
+    const c=new Date(lYear,11,i);
+    if(c.getDay()===0&&sameDay(date,c)) return{title:"Sveta Obitelj",season:'christmas',day:'holyFamily',yearCycle,weekdayCycle,color:SEASON_COLORS.christmas,isSunday:true};
+  }
+
+  // ── ADVENT ──
+  if(date>=advent1&&date<christmas){
+    const w=Math.min(Math.floor((date-advent1)/ms)+1,4);
+    return{title:`${w}. nedjelja došašća`,season:'advent',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.advent,isSunday:isSun};
+  }
+  // ── CHRISTMAS TIME (Dec 26 → Baptism) ──
+  if(date>christmas&&date<baptism){
+    return{title:"Božićno vrijeme",season:'christmas',day:'octave',yearCycle,weekdayCycle,color:SEASON_COLORS.christmas,isSunday:isSun};
+  }
+  // ── ORDINARY I (Baptism → Ash Wednesday) ──
+  if(date>baptism&&date<ashWed){
+    const botDow=baptism.getDay();
+    const firstOTSun=addDays(baptism,botDow===0?7:7-botDow);
+    if(isSun&&date>=firstOTSun){
+      const w=Math.floor((date-firstOTSun)/ms)+2;
+      return{title:`${w}. nedjelja kroz godinu`,season:'ordinary',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.ordinary,isSunday:true};
+    }
+    if(!isSun&&date>=firstOTSun){
+      const w=Math.floor((date-firstOTSun)/ms)+2;
+      return{title:`${w}. tjedan kroz godinu`,season:'ordinary',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.ordinary,isSunday:false};
+    }
+    return{title:"Kroz godinu",season:'ordinary',yearCycle,weekdayCycle,color:SEASON_COLORS.ordinary,isSunday:false};
+  }
+  // ── LENT (Ash Wednesday + 1 → Palm Sunday) ──
+  if(date>ashWed&&date<palmSunday){
+    const ashDow=ashWed.getDay();
+    const lent1Sun=addDays(ashWed,ashDow===0?7:7-ashDow);
+    if(isSun&&date>=lent1Sun){
+      const w=Math.floor((date-lent1Sun)/ms)+1;
+      return{title:`${w}. nedjelja korizme`,season:'lent',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.lent,isSunday:true};
+    }
+    return{title:"Korizma",season:'lent',yearCycle,weekdayCycle,color:SEASON_COLORS.lent,isSunday:false};
+  }
+  // ── HOLY WEEK ──
+  if(date>=palmSunday&&date<easter){
+    return{title:"Sveti tjedan",season:'holyWeek',yearCycle,weekdayCycle,color:SEASON_COLORS.holyWeek,isSunday:false};
+  }
+  // ── EASTER TIME (Easter+1 → Pentecost) ──
+  if(date>easter&&date<pentecost){
+    const w=Math.floor((date-easter)/ms)+1;
+    if(isSun) return{title:`${w}. uskrsna nedjelja`,season:'easter',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.easter,isSunday:true};
+    return{title:"Uskrsno vrijeme",season:'easter',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.easter,isSunday:false};
+  }
+  // ── ORDINARY II (Pentecost+1 → Advent) ──
+  if(date>pentecost&&date<nextAdvent){
+    const botDow2=baptism.getDay();
+    const firstOTSun2=addDays(baptism,botDow2===0?7:7-botDow2);
+    const ashDow2=ashWed.getDay();
+    const lastOT1Sun=addDays(ashWed,-(ashDow2===0?7:ashDow2));
+    const lastOT1Week=Math.floor((lastOT1Sun-firstOTSun2)/ms)+2;
+    const pentDow=pentecost.getDay();
+    const firstOT2Sun=addDays(pentecost,pentDow===0?7:7-pentDow);
+    if(isSun&&date>=firstOT2Sun){
+      const wFromStart=Math.floor((date-firstOT2Sun)/ms);
+      const w=Math.min(lastOT1Week+1+wFromStart,34);
+      return{title:`${w}. nedjelja kroz godinu`,season:'ordinary',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.ordinary,isSunday:true};
+    }
+    if(!isSun&&date>=firstOT2Sun){
+      const wFromStart=Math.floor((date-firstOT2Sun)/ms);
+      const w=Math.min(lastOT1Week+1+wFromStart,34);
+      return{title:`${w}. tjedan kroz godinu`,season:'ordinary',week:w,yearCycle,weekdayCycle,color:SEASON_COLORS.ordinary,isSunday:false};
+    }
+    return{title:"Kroz godinu",season:'ordinary',yearCycle,weekdayCycle,color:SEASON_COLORS.ordinary,isSunday:false};
+  }
+  return{title:"—",season:'ordinary',yearCycle,weekdayCycle,color:SEASON_COLORS.ordinary,isSunday:false};
+}
+
+function getReadings(lit){
+  const L=LECT_A;
+  const{season,day,week,isSunday}=lit;
+  if(season==='advent'&&isSunday&&week>=1&&week<=4) return L.advent[week-1];
+  if(season==='christmas'){
+    if(day==='nativity') return L.christmas.nativity;
+    if(day==='holyFamily') return L.christmas.holyFamily;
+    if(day==='maryMotherOfGod') return L.christmas.maryMotherOfGod;
+    if(day==='epiphany') return L.christmas.epiphany;
+    if(day==='baptism') return L.christmas.baptism;
+  }
+  if(season==='lent'){
+    if(day==='ashWednesday') return L.lent[0];
+    if(day==='palmSunday') return L.lent[6];
+    if(isSunday&&week>=1&&week<=5) return L.lent[week];
+  }
+  if(season==='holyWeek'){
+    if(day==='holyThursday') return L.holyWeek.holyThursday;
+    if(day==='goodFriday') return L.holyWeek.goodFriday;
+    if(day==='holySaturday') return L.holyWeek.holySaturday;
+  }
+  if(season==='easter'){
+    if(day==='ascension') return L.easter[6];
+    if(day==='pentecost') return L.easter[8];
+    if(isSunday&&week>=1&&week<=8) return L.easter[week-1];
+  }
+  if(season==='ordinary'&&isSunday&&week>=2&&week<=34) return L.ordinary[week-1];
+  return null;
+}
+
+function bibleComUrl(bcId){return`https://www.bible.com/hr/bible/164/${bcId}.NTLH`}
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+const TODAY=new Date();
+let state={date:new Date(TODAY)};
+const expandedText={};
+
+function setState(patch){Object.assign(state,patch);render()}
+
+// ════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════
+function render(){
+  const lit=getLiturgicalInfo(state.date);
+  const readings=getReadings(lit);
+  const sc=lit.color;
+  const isToday=sameDay(state.date,TODAY);
+  const seasonName=SEASON_NAMES[lit.season]||'Kroz godinu';
+  const glyph=lit.season==='easter'?'☩':'✝';
+
+  // Update CSS variables
+  document.documentElement.style.setProperty('--sc',sc);
+  document.documentElement.style.setProperty('--sc-t',sc+'cc');
+  document.documentElement.style.setProperty('--sc-bg',sc+'1a');
+  document.documentElement.style.setProperty('--sc-border',sc+'44');
+  document.documentElement.style.setProperty('--sc-border2',sc+'66');
+
+  document.getElementById('app').innerHTML=`
+    <header>
+      <div class="cross-pulse">${glyph}</div>
+      <h1 class="header-title">Dnevna misna čitanja</h1>
+      <p class="header-sub">Rimokatolički red čitanja · Godina ${lit.yearCycle} · ${seasonName}</p>
+      <div class="season-badge"><span class="season-dot"></span>${seasonName.toUpperCase()}</div>
+    </header>
+
+    <nav>
+      <button class="nav-btn" onclick="go(-7)" title="Prethodna nedjelja">◀◀</button>
+      <button class="nav-btn" onclick="go(-1)" title="Prethodni dan">◀</button>
+      <div class="nav-date">
+        <div class="nav-date-str">${formatDateHR(state.date)}</div>
+        <div class="nav-date-lit">${lit.title}</div>
+      </div>
+      <button class="nav-btn" onclick="go(1)" title="Sljedeći dan">▶</button>
+      <button class="nav-btn" onclick="go(7)" title="Sljedeća nedjelja">▶▶</button>
+      ${!isToday?`<button class="today-btn" onclick="goToday()">DANAS</button>`:''}
+    </nav>
+
+    <main>
+      <div class="ornament">
+        <span class="ornament-line"></span>
+        <span class="ornament-cross">${glyph}</span>
+        <span class="ornament-line"></span>
+      </div>
+
+      ${readings ? renderReadings(readings, lit) : renderEmpty(lit)}
+
+      <div class="meta-cards">
+        ${[['Liturgijska godina',`Godina ${lit.yearCycle}`],['Čitanja kroz tjedan',`Godina ${lit.weekdayCycle}`],['Sezona',seasonName]].map(([l,v])=>`
+          <div class="meta-card">
+            <div class="meta-label">${l}</div>
+            <div class="meta-value">${v}</div>
+          </div>`).join('')}
+      </div>
+
+      <details style="margin-top:24px">
+        <summary class="about-summary">ℹ️ O aplikaciji</summary>
+        <div class="about-body">
+          <p><strong>Čitanja su kodirana za:</strong> Godinu A (Došašće 2025 – Krist Kralj 2026)</p>
+          <p><strong>U pripremi:</strong> Godina B (Došašće 2026 →) i Godina C</p>
+          <p><strong>Tekst čitanja:</strong> World English Bible (javna domena) putem <em>bible-api.com</em></p>
+          <p><strong>Hrvatski prijevod:</strong> Klikni 🇭🇷 HR link pokraj svakog čitanja (Bible.com)</p>
+          <p><strong>Liturgijski kalendar:</strong> Izračunava se automatski prema rimokatoličkom lekcionaru</p>
+          <p style="margin-top:10px;font-size:12px;color:#aaa">GitHub Pages · Statička web aplikacija · Nema servera</p>
+        </div>
+      </details>
+    </main>
+  `;
+
+  // Re-attach expand states (text already fetched)
+  document.querySelectorAll('[data-card-idx]').forEach(btn=>{
+    const idx=btn.dataset.cardIdx;
+    if(expandedText[idx]!==undefined) restoreCard(idx);
+  });
+}
+
+function renderReadings(readings,lit){
+  const warn=lit.yearCycle!=='A'?`<div class="year-warn">ℹ️ Čitanja za Godinu ${lit.yearCycle} još nisu dodana. Privremeno se prikazuju čitanja Godine A.</div>`:'';
+  const cards=readings.readings.map((r,i)=>{
+    const key=`${state.date.toDateString()}-${i}`;
+    const isGospel=r.label.toLowerCase().includes('evanđelje');
+    return`<div class="card${isGospel?' gospel':''}" id="card-${i}">
+      <div class="card-inner">
+        <div class="card-top">
+          <div class="card-label-wrap">
+            <span class="label-badge ${isGospel?'gospel':'other'}">${r.label}</span>
+            <div class="card-ref">${r.ref}</div>
+          </div>
+          <div class="card-actions">
+            <button class="read-btn closed" data-card-idx="${i}" data-key="${key}" data-ref="${r.ref}" onclick="toggleCard(${i},'${r.ref}','${key}')">📖 Čitaj (EN)</button>
+            <a class="hr-btn" href="${bibleComUrl(r.bcId)}" target="_blank" rel="noopener noreferrer">🇭🇷 HR</a>
+          </div>
+        </div>
+        <div id="card-error-${i}" class="card-error" style="display:none"></div>
+        <div id="card-text-${i}" class="card-text" style="display:none">
+          <div class="card-text-meta">World English Bible (javna domena)</div>
+          <div id="card-body-${i}"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  return`<div class="reading-enter">
+    <h2 class="readings-title">${readings.title}</h2>
+    ${warn}
+    <div class="readings-list">${cards}</div>
+    <div class="tip">📖 Tekst se učitava na engleskom (World English Bible — javna domena). Za hrvatski prijevod, klikni <strong>🇭🇷 HR</strong> na svakom čitanju.</div>
+  </div>`;
+}
+
+function renderEmpty(lit){
+  const msg=!lit.isSunday
+    ?`Ovaj dan (${DAYS_HR[state.date.getDay()]}) nema zaseban obrazac nedjeljna čitanja. Navigiraj do obližnje nedjelje ili blagdana.`
+    :`Čitanja za Godinu ${lit.yearCycle} još nisu kodirana. Dostupna su samo čitanja Godine A (Došašće 2025 – Krist Kralj 2026).`;
+  return`<div class="empty">
+    <div class="empty-icon">${lit.isSunday?'📅':'🕯️'}</div>
+    <p class="empty-msg">${msg}</p>
+    <div class="empty-links">
+      <a class="link-primary" href="https://www.hbk.hr/liturgija" target="_blank">HBK Liturgija →</a>
+      <a class="link-secondary" href="https://www.laudato.hr/Molitva/Sveta-misa/Dnevna-citanja.aspx" target="_blank">Laudato.hr →</a>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════
+// CARD TOGGLE / FETCH
+// ════════════════════════════════════════════
+const fetchCache={};
+async function toggleCard(idx,ref,key){
+  const btn=document.querySelector(`[data-card-idx="${idx}"]`);
+  const textDiv=document.getElementById(`card-text-${idx}`);
+  const errDiv=document.getElementById(`card-error-${idx}`);
+  const bodyDiv=document.getElementById(`card-body-${idx}`);
+
+  const isOpen=textDiv.style.display!=='none';
+  if(isOpen){
+    textDiv.style.display='none';
+    btn.className='read-btn closed';
+    btn.textContent='📖 Čitaj (EN)';
+    return;
+  }
+
+  if(fetchCache[key]){
+    bodyDiv.textContent=fetchCache[key];
+    textDiv.style.display='block';
+    btn.className='read-btn open';
+    btn.textContent='✕ Zatvori';
+    return;
+  }
+
+  btn.textContent='⏳';
+  btn.disabled=true;
+  errDiv.style.display='none';
+  try{
+    const res=await fetch(`https://bible-api.com/${encodeURIComponent(ref)}?translation=web`);
+    const data=await res.json();
+    if(data.error) throw new Error(data.error);
+    fetchCache[key]=data.text||'(nema teksta)';
+    bodyDiv.textContent=fetchCache[key];
+    textDiv.style.display='block';
+    btn.className='read-btn open';
+    btn.textContent='✕ Zatvori';
+  }catch(e){
+    errDiv.textContent='Nije moguće učitati tekst. Provjerite internetsku vezu.';
+    errDiv.style.display='block';
+    btn.className='read-btn closed';
+    btn.textContent='📖 Čitaj (EN)';
+  }
+  btn.disabled=false;
+}
+
+function restoreCard(idx){
+  const key=`${state.date.toDateString()}-${idx}`;
+  if(fetchCache[key]){
+    const bodyDiv=document.getElementById(`card-body-${idx}`);
+    const textDiv=document.getElementById(`card-text-${idx}`);
+    const btn=document.querySelector(`[data-card-idx="${idx}"]`);
+    if(bodyDiv){bodyDiv.textContent=fetchCache[key]}
+    if(textDiv){textDiv.style.display='block'}
+    if(btn){btn.className='read-btn open';btn.textContent='✕ Zatvori'}
+  }
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function go(days){const d=new Date(state.date);d.setDate(d.getDate()+days);setState({date:d})}
+function goToday(){setState({date:new Date(TODAY)})}
+
+// ════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>
